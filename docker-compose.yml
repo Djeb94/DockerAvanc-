@@ -1,0 +1,39 @@
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - MONGODB_URL=mongodb://mongo:27017/todolist
+    depends_on:
+      - mongo
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # Ne pas exposer le port ici, c'est Nginx qui servira le frontend
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./dist:/usr/share/nginx/html:ro
+    depends_on:
+      - frontend
+      - api
+
+  mongo:
+    image: mongo:6
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
