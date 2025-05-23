@@ -6,14 +6,12 @@ import mongoose from 'mongoose';
 const app = express();
 const PORT = 3001;
 
-// MongoDB connection
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://mongo:27017/todolist';
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('Error connecting to MongoDB:', err));
 
-// Define Task schema and model
 const taskSchema = new mongoose.Schema({
   title: { type: String, required: true },
   completed: { type: Boolean, default: false },
@@ -21,11 +19,9 @@ const taskSchema = new mongoose.Schema({
 
 const Task = mongoose.model('Task', taskSchema);
 
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// Routes
 app.get('/tasks', async (req, res) => {
   try {
     const tasks = await Task.find();
@@ -73,7 +69,6 @@ app.delete('/tasks/:id', async (req, res) => {
   }
 });
 
-// Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
